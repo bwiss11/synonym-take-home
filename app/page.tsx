@@ -1,17 +1,13 @@
 "use client";
 
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable"
-import { useEffect, useState } from "react";
-import { Equation } from "@/lib/types/equation";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import EditorPanel from "@/components/web/editor-panel";
 import Header from "@/components/web/header";
 import SidebarPanel from "@/components/web/sidebar-panel";
-import EditorPanel from "@/components/web/editor-panel";
-import { generateUUID } from "@/lib/utils";
+import { Equation } from "@/lib/types/equation";
 import { EquationEnvironment } from "@/lib/types/identifiers";
+import { generateUUID } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 // Feel free to change these! They're just for testing, and meant to mimic
 // the IDE environment in which a user would be writing equations.
@@ -38,36 +34,15 @@ const initialIdentifiers = {
     "Outlet.rate.m",
     "Outlet.rate.v",
   ],
-  functions: [
-    "SQRT",
-    "LOG",
-    "EXP",
-    "SIN",
-    "COS",
-    "TAN",
-    "ROUND",
-    "CEIL",
-    "FLOOR",
-    "ABS",
-    "SIGN",
-    "POW",
-    "MOD",
-  ],
-  constants: [
-    "pi",
-    "e",
-    "c",
-    "MagicConstant",
-    "T_STP",
-    "P_STP",
-  ],
-}
+  functions: ["SQRT", "LOG", "EXP", "SIN", "COS", "TAN", "ROUND", "CEIL", "FLOOR", "ABS", "SIGN", "POW", "MOD"],
+  constants: ["pi", "e", "c", "MagicConstant", "T_STP", "P_STP"],
+};
 
 const initialEnvironment: EquationEnvironment = {
-  variables: initialIdentifiers.variables.map(v => ({ code: v, type: "variable" })),
-  functions: initialIdentifiers.functions.map(f => ({ code: f, type: "function" })),
-  constants: initialIdentifiers.constants.map(c => ({ code: c, type: "constant" })),
-}
+  variables: initialIdentifiers.variables.map((v) => ({ code: v, type: "variable" })),
+  functions: initialIdentifiers.functions.map((f) => ({ code: f, type: "function" })),
+  constants: initialIdentifiers.constants.map((c) => ({ code: c, type: "constant" })),
+};
 
 // Defines the width of each panel in %
 const editorPanelWidth = 70;
@@ -77,9 +52,13 @@ export default function Home() {
   const [equations, setEquations] = useState<Equation[]>([]);
   const [environment, setEnvironment] = useState<EquationEnvironment>(initialEnvironment);
 
+  useEffect(() => {
+    console.log("equations are", equations);
+  }, [equations]);
+
   const addEquation = () => {
     setEquations([...equations, { id: generateUUID(), lhs: "", rhs: "" }]);
-  }
+  };
 
   // Ensure that at least one equation is present when the page loads.
   useEffect(() => {
@@ -94,9 +73,16 @@ export default function Home() {
         <Header />
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={editorPanelWidth}>
-            <EditorPanel equations={equations} addEquation={addEquation} environment={environment} />
-          </ResizablePanel> 
-          <ResizableHandle withHandle/>
+            <EditorPanel
+              equations={equations}
+              setEquations={setEquations}
+              addEquation={addEquation}
+              environment={environment}
+              setEnvironment={setEnvironment}
+              initialVariablesLength={initialIdentifiers.variables.length}
+            />
+          </ResizablePanel>
+          <ResizableHandle withHandle />
           <ResizablePanel defaultSize={sidebarPanelWidth}>
             <SidebarPanel environment={environment} />
           </ResizablePanel>

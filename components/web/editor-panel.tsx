@@ -1,17 +1,20 @@
-import { PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Equation } from "@/lib/types/equation";
 import { EquationEnvironment } from "@/lib/types/identifiers";
+import { PlusIcon } from "lucide-react";
 import EquationRow from "./equation-row";
 
 interface EditorPanelProps {
   equations: Equation[];
   addEquation: () => void;
-  environment: EquationEnvironment; 
+  environment: EquationEnvironment;
+  setEnvironment: (environment: EquationEnvironment) => void;
+  setEquations: (equations: Equation[]) => void;
+  initialVariablesLength: number;
 }
 
 const EditorPanel = (props: EditorPanelProps) => {
-  const { equations, addEquation, environment } = props;
+  const { equations, addEquation, setEquations, environment, setEnvironment, initialVariablesLength } = props;
 
   return (
     <div className="h-full w-full p-4 flex flex-col gap-4">
@@ -23,10 +26,19 @@ const EditorPanel = (props: EditorPanelProps) => {
         </Button>
       </div>
       {equations.map((equation, index) => (
-        <EquationRow key={index} equation={equation} />
+        <EquationRow
+          key={index}
+          equation={equation}
+          index={index}
+          equations={equations}
+          setEquations={setEquations}
+          environment={environment}
+          setEnvironment={setEnvironment}
+          initialVariablesLength={initialVariablesLength}
+        />
       ))}
     </div>
-  )
-}
+  );
+};
 
 export default EditorPanel;
