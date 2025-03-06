@@ -7,6 +7,7 @@
     overflow-y: auto;
     border-radius: 0.25rem;
     margin-top: 4px;
+    z-index: 100;
 }
 
 .equation-row {
@@ -57,6 +58,11 @@
     font-family: "Helvetica Neue", sans-serif; /* Added a fallback font */
     border-radius: 0rem;
     min-width: 150px;
+}
+
+.delete-button {
+  text-align: center;
+  padding-right: 10px;
 }
 
 .editor-panel-flex {

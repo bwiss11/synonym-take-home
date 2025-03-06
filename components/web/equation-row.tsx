@@ -113,6 +113,31 @@ const EquationRow = (props: EquationRowProps) => {
     }
   };
 
+  const handleDeleteEquation = (id: string) => {
+    const newEquations = equations.filter((eq) => eq.id !== id);
+    setEquations(newEquations);
+
+    // Find the variable name associated with the equation
+    const equationToDelete = equations.find((eq) => eq.id === id);
+    if (equationToDelete) {
+      const variableName = equationToDelete.lhs; // Assuming lhs is the variable name
+
+      // Find the index of the variable to delete
+      const index = environment.variables.findIndex((variable) => variable.code === variableName);
+
+      if (index !== -1) {
+        // Create a new array without the variable at the found index
+        const updatedVariables = [...environment.variables.slice(0, index), ...environment.variables.slice(index + 1)];
+
+        // Update the environment with the new variables array
+        setEnvironment({
+          ...environment,
+          variables: updatedVariables,
+        });
+      }
+    }
+  };
+
   // Add click outside handler to clear results
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -192,6 +217,9 @@ const EquationRow = (props: EquationRowProps) => {
           ))}
         </div>
       </div>
+      <button className="delete-button" onClick={() => handleDeleteEquation(equation.id)}>
+        X
+      </button>
     </div>
   );
 };

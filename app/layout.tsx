@@ -29,6 +29,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <div id="portal-root" style={{ position: "relative", zIndex: 9999 }} />
       </body>
     </html>
   );
