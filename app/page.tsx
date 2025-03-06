@@ -7,7 +7,7 @@ import SidebarPanel from "@/components/web/sidebar-panel";
 import { Equation } from "@/lib/types/equation";
 import { EquationEnvironment } from "@/lib/types/identifiers";
 import { generateUUID } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 // Feel free to change these! They're just for testing, and meant to mimic
 // the IDE environment in which a user would be writing equations.
@@ -56,9 +56,9 @@ export default function Home() {
     console.log("equations are", equations);
   }, [equations]);
 
-  const addEquation = () => {
-    setEquations([...equations, { id: generateUUID(), lhs: "", rhs: "" }]);
-  };
+  const addEquation = useCallback(() => {
+    setEquations((prevEquations) => [...prevEquations, { id: generateUUID(), lhs: "", rhs: "" }]);
+  }, []);
 
   // Ensure that at least one equation is present when the page loads.
   useEffect(() => {

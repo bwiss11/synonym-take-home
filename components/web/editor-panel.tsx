@@ -17,8 +17,25 @@ const EditorPanel = (props: EditorPanelProps) => {
   const { equations, addEquation, setEquations, environment, setEnvironment, initialVariablesLength } = props;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-      <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "10px",
+        position: "relative",
+        zIndex: 50,
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          paddingLeft: "10px",
+          paddingRight: "10px",
+          marginBottom: "10px",
+        }}
+      >
         <h1 className="text-lg font-medium">Equations</h1>
         <Button
           variant="secondary"

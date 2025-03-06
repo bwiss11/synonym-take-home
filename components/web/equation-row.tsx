@@ -17,9 +17,12 @@ const EquationRow = (props: EquationRowProps) => {
   const { equation, index, setEquations, equations, environment, setEnvironment, initialVariablesLength } = props;
   const [lhsResults, setLhsResults] = useState<string[]>([]);
   const [rhsResults, setRhsResults] = useState<string[]>([]);
+  const [cursorPosition, setCursorPosition] = useState(0);
   const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
   const lhsRef = useRef<HTMLDivElement>(null);
   const rhsRef = useRef<HTMLDivElement>(null);
+  const lhsInputRef = useRef<HTMLInputElement>(null);
+  const rhsInputRef = useRef<HTMLInputElement>(null);
 
   const identifiers = [
     ...environment.variables.map((v) => v.code),
@@ -29,9 +32,18 @@ const EquationRow = (props: EquationRowProps) => {
 
   type Side = "left" | "right";
 
-  const handleUpdate = (updatedEquation: Equation, value: string, side: Side) => {
+  const handleUpdate = (
+    updatedEquation: Equation,
+    value: string,
+    side: Side,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const newEquations = equations.map((eq, i) => (i === index ? updatedEquation : eq));
     setEquations(newEquations);
+
+    // Get cursor position
+    const cursorPos = event.target.selectionStart || 0;
+    setCursorPosition(cursorPos);
 
     const newVariable = {
       code: updatedEquation.lhs,
@@ -78,7 +90,7 @@ const EquationRow = (props: EquationRowProps) => {
       // Update equation based on side
       const updatedEquation = side === "left" ? { ...equation, lhs: newValue } : { ...equation, rhs: newValue };
 
-      handleUpdate(updatedEquation, newValue, side);
+      handleUpdate(updatedEquation, newValue, side, e as unknown as React.ChangeEvent<HTMLInputElement>);
       setResults([]);
       setHighlightedIndex(-1);
     } else if (e.key === "ArrowDown" && results.length > 0) {
@@ -96,7 +108,7 @@ const EquationRow = (props: EquationRowProps) => {
       // Update equation based on side
       const updatedEquation = side === "left" ? { ...equation, lhs: newValue } : { ...equation, rhs: newValue };
 
-      handleUpdate(updatedEquation, newValue, side);
+      handleUpdate(updatedEquation, newValue, side, e as unknown as React.ChangeEvent<HTMLInputElement>);
       setResults([]);
       setHighlightedIndex(-1);
     }
@@ -121,22 +133,32 @@ const EquationRow = (props: EquationRowProps) => {
   }, []);
 
   return (
-    <div style={{ width: "100%", display: "flex", flexDirection: "row", gap: "20px" }}>
+    <div
+      style={{
+        width: "100%",
+        display: "flex",
+        flexDirection: "row",
+        gap: "20px",
+        paddingLeft: "10px",
+        paddingRight: "10px",
+      }}
+    >
       <div className="relative" ref={lhsRef} style={{ flex: 1 }}>
         <Input
+          ref={lhsInputRef}
           className="font-mono"
           value={equation.lhs}
-          onChange={(e) => handleUpdate({ ...equation, lhs: e.target.value }, e.target.value, "left")}
+          onChange={(e) => handleUpdate({ ...equation, lhs: e.target.value }, e.target.value, "left", e)}
           onKeyDown={(e) => handleKeyDown(e, "left")}
         />
         <div
           style={{
             position: "absolute",
             top: "100%",
-            left: 0,
+            left: `${Math.min(9 * cursorPosition + 4, lhsInputRef.current?.offsetWidth || 500)}px`,
             backgroundColor: "rgb(250, 250, 240)",
             border: lhsResults.length > 0 ? "1px solid #ccc" : "none",
-            zIndex: 1000,
+            zIndex: 1000, // Very high z-index
             width: "100%",
             maxHeight: "200px",
             overflowY: "auto",
@@ -161,19 +183,20 @@ const EquationRow = (props: EquationRowProps) => {
       {/* RHS Input with results dropdown */}
       <div className="relative" ref={rhsRef} style={{ flex: 1 }}>
         <Input
+          ref={rhsInputRef}
           className="min-w-12 font-mono"
           value={equation.rhs}
-          onChange={(e) => handleUpdate({ ...equation, rhs: e.target.value }, e.target.value, "right")}
+          onChange={(e) => handleUpdate({ ...equation, rhs: e.target.value }, e.target.value, "right", e)}
           onKeyDown={(e) => handleKeyDown(e, "right")}
         />
         <div
           style={{
             position: "absolute",
             top: "100%",
-            left: 0,
+            left: `${Math.min(9 * cursorPosition + 4, rhsInputRef?.current?.offsetWidth ?? 1000) / 2}px`,
             backgroundColor: "rgb(250, 250, 240)",
             border: rhsResults.length > 0 ? "1px solid #ccc" : "none",
-            zIndex: 1000,
+            zIndex: 100,
             width: "100%",
             maxHeight: "200px",
             overflowY: "auto",
