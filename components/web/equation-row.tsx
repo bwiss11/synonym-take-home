@@ -1,6 +1,6 @@
 import { Equation } from "@/lib/types/equation";
 import { EquationEnvironment } from "@/lib/types/identifiers";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
 
 interface EquationRowProps {
@@ -18,6 +18,8 @@ const EquationRow = (props: EquationRowProps) => {
   const [lhsResults, setLhsResults] = useState<string[]>([]);
   const [rhsResults, setRhsResults] = useState<string[]>([]);
   const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
+  const lhsRef = useRef<HTMLDivElement>(null);
+  const rhsRef = useRef<HTMLDivElement>(null);
 
   const identifiers = [
     ...environment.variables.map((v) => v.code),
@@ -58,6 +60,7 @@ const EquationRow = (props: EquationRowProps) => {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, side: Side) => {
     console.log("Key pressed:", e.key);
+    console.log("highlightedIndex", highlightedIndex);
     const results = side === "left" ? lhsResults : rhsResults;
     const input = side === "left" ? equation.lhs : equation.rhs;
     const setResults = side === "left" ? setLhsResults : setRhsResults;
@@ -78,14 +81,50 @@ const EquationRow = (props: EquationRowProps) => {
       handleUpdate(updatedEquation, newValue, side);
       setResults([]);
       setHighlightedIndex(-1);
+    } else if (e.key === "ArrowDown" && results.length > 0) {
+      e.preventDefault();
+      setHighlightedIndex((prevIndex) => (prevIndex + 1) % results.length);
+    } else if (e.key === "ArrowUp" && results.length > 0) {
+      e.preventDefault();
+      setHighlightedIndex((prevIndex) => (prevIndex - 1 + results.length) % results.length);
+    } else if (e.key === "Enter" && highlightedIndex >= 0) {
+      e.preventDefault();
+      console.log("results", results);
+      // Get last identifier in input + replace partially completed identifier with autcomplete result
+      const lastSegment = input.split(/[\s()+\-*/^=]+/).pop();
+      const newValue = input.replace(new RegExp(`${lastSegment}$`), results[highlightedIndex]);
+      // Update equation based on side
+      const updatedEquation = side === "left" ? { ...equation, lhs: newValue } : { ...equation, rhs: newValue };
+
+      handleUpdate(updatedEquation, newValue, side);
+      setResults([]);
+      setHighlightedIndex(-1);
     }
   };
 
+  // Add click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!lhsRef.current?.contains(event.target as Node)) {
+        setLhsResults([]);
+      }
+      if (!rhsRef.current?.contains(event.target as Node)) {
+        setRhsResults([]);
+      }
+      setHighlightedIndex(-1);
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="flex flex-row items-center gap-4 w-full">
-      <div className="relative">
+      <div className="relative" ref={lhsRef}>
         <Input
-          className="min-w-12 max-w-[300px] font-mono"
+          className="min-w-12 max-w-[500px] font-mono"
           value={equation.lhs}
           onChange={(e) => handleUpdate({ ...equation, lhs: e.target.value }, e.target.value, "left")}
           onKeyDown={(e) => handleKeyDown(e, "left")}
@@ -109,6 +148,7 @@ const EquationRow = (props: EquationRowProps) => {
             <div
               key={`result-${result}-${index}-${equation.id}`}
               className="px-2 py-1 hover:bg-gray-200 cursor-pointer"
+              style={{ backgroundColor: highlightedIndex === index ? "lightgray" : "transparent" }}
             >
               {result}
             </div>
@@ -119,7 +159,7 @@ const EquationRow = (props: EquationRowProps) => {
       <span className="text-lg text-gray-500">=</span>
 
       {/* RHS Input with results dropdown */}
-      <div className="relative">
+      <div className="relative" ref={rhsRef}>
         <Input
           className="min-w-12 font-mono"
           value={equation.rhs}
@@ -141,8 +181,12 @@ const EquationRow = (props: EquationRowProps) => {
             marginTop: "4px",
           }}
         >
-          {rhsResults.map((result) => (
-            <div key={result} className="px-2 py-1 hover:bg-gray-200 cursor-pointer">
+          {rhsResults.map((result, index) => (
+            <div
+              key={`result-${result}-${index}-${equation.id}`}
+              className="px-2 py-1 hover:bg-gray-200 cursor-pointer"
+              style={{ backgroundColor: highlightedIndex === index ? "lightgray" : "transparent" }}
+            >
               {result}
             </div>
           ))}
