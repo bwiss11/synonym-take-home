@@ -17,10 +17,26 @@ const EditorPanel = (props: EditorPanelProps) => {
   const { equations, addEquation, setEquations, environment, setEnvironment, initialVariablesLength } = props;
 
   return (
-    <div className="h-full w-full p-4 flex flex-col gap-4">
-      <div className="flex flex-row items-center gap-4">
+    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
         <h1 className="text-lg font-medium">Equations</h1>
-        <Button variant="secondary" size="sm" className="ml-auto" onClick={addEquation}>
+        <Button
+          variant="secondary"
+          size="sm"
+          className="ml-auto"
+          onClick={addEquation}
+          style={{
+            padding: "10px",
+            fontSize: "20px",
+            marginLeft: "10px",
+            backgroundColor: "rgb(94, 159, 91)",
+            letterSpacing: ".1rem",
+            color: "black",
+            fontFamily: "Helvetica Neue",
+            borderRadius: "0rem",
+            minWidth: "150px",
+          }}
+        >
           <PlusIcon className="w-4 h-4" />
           Add Equation
         </Button>

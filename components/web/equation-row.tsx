@@ -121,10 +121,10 @@ const EquationRow = (props: EquationRowProps) => {
   }, []);
 
   return (
-    <div className="flex flex-row items-center gap-4 w-full">
-      <div className="relative" ref={lhsRef}>
+    <div style={{ width: "100%", display: "flex", flexDirection: "row", gap: "20px" }}>
+      <div className="relative" ref={lhsRef} style={{ flex: 1 }}>
         <Input
-          className="min-w-12 max-w-[500px] font-mono"
+          className="font-mono"
           value={equation.lhs}
           onChange={(e) => handleUpdate({ ...equation, lhs: e.target.value }, e.target.value, "left")}
           onKeyDown={(e) => handleKeyDown(e, "left")}
@@ -135,7 +135,7 @@ const EquationRow = (props: EquationRowProps) => {
             top: "100%",
             left: 0,
             backgroundColor: "rgb(250, 250, 240)",
-            border: "1px solid #ccc",
+            border: lhsResults.length > 0 ? "1px solid #ccc" : "none",
             zIndex: 1000,
             width: "100%",
             maxHeight: "200px",
@@ -159,7 +159,7 @@ const EquationRow = (props: EquationRowProps) => {
       <span className="text-lg text-gray-500">=</span>
 
       {/* RHS Input with results dropdown */}
-      <div className="relative" ref={rhsRef}>
+      <div className="relative" ref={rhsRef} style={{ flex: 1 }}>
         <Input
           className="min-w-12 font-mono"
           value={equation.rhs}
@@ -172,7 +172,7 @@ const EquationRow = (props: EquationRowProps) => {
             top: "100%",
             left: 0,
             backgroundColor: "rgb(250, 250, 240)",
-            border: "1px solid #ccc",
+            border: rhsResults.length > 0 ? "1px solid #ccc" : "none",
             zIndex: 1000,
             width: "100%",
             maxHeight: "200px",

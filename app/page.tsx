@@ -68,26 +68,40 @@ export default function Home() {
   }, [equations, addEquation]);
 
   return (
-    <div className="font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col h-screen">
+    <>
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+
+          backgroundColor: "rgb(250, 250, 240)",
+        }}
+      >
         <Header />
-        <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel defaultSize={editorPanelWidth}>
-            <EditorPanel
-              equations={equations}
-              setEquations={setEquations}
-              addEquation={addEquation}
-              environment={environment}
-              setEnvironment={setEnvironment}
-              initialVariablesLength={initialIdentifiers.variables.length}
-            />
-          </ResizablePanel>
-          <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={sidebarPanelWidth}>
-            <SidebarPanel environment={environment} />
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      </main>
-    </div>
+        <div style={{ width: "90%" }}>
+          <main>
+            <ResizablePanelGroup direction="horizontal">
+              <ResizablePanel defaultSize={editorPanelWidth}>
+                <EditorPanel
+                  equations={equations}
+                  setEquations={setEquations}
+                  addEquation={addEquation}
+                  environment={environment}
+                  setEnvironment={setEnvironment}
+                  initialVariablesLength={initialIdentifiers.variables.length}
+                />
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={sidebarPanelWidth}>
+                <SidebarPanel environment={environment} />
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </main>
+        </div>
+      </div>
+    </>
   );
 }

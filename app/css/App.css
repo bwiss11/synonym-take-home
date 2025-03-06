@@ -1,0 +1,16 @@
+.line {
+    width: 100%;
+    background-color: black;
+    margin: 0 auto; 
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+.thin-line {
+    height: 2px; 
+    color: red;
+  }
+  
+  .thick-line {
+    height: 5px; 
+  }
