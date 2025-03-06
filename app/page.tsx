@@ -52,10 +52,6 @@ export default function Home() {
   const [equations, setEquations] = useState<Equation[]>([]);
   const [environment, setEnvironment] = useState<EquationEnvironment>(initialEnvironment);
 
-  useEffect(() => {
-    console.log("equations are", equations);
-  }, [equations]);
-
   const addEquation = useCallback(() => {
     // Check if the last equation has both lhs and rhs filled
     const lastEquation = equations[equations.length - 1];
