@@ -57,8 +57,18 @@ export default function Home() {
   }, [equations]);
 
   const addEquation = useCallback(() => {
-    setEquations((prevEquations) => [...prevEquations, { id: generateUUID(), lhs: "", rhs: "" }]);
-  }, []);
+    // Check if the last equation has both lhs and rhs filled
+    const lastEquation = equations[equations.length - 1];
+    if (equations.length == 0 || (lastEquation && lastEquation.lhs && lastEquation.rhs)) {
+      // Add a new equation
+      setEquations((prevEquations) => [
+        ...prevEquations,
+        { id: generateUUID(), lhs: "", rhs: "" }, // Add a new empty equation
+      ]);
+    } else {
+      alert("Please fill out both LHS and RHS of the last equation before adding a new one.");
+    }
+  }, [equations]);
 
   // Ensure that at least one equation is present when the page loads.
   useEffect(() => {
