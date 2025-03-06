@@ -4,35 +4,14 @@ import synonym from "../../public/synonym.svg";
 const Header = () => {
   return (
     <div style={{ width: "90%", marginTop: "1rem" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "left",
-          alignItems: "center",
-          paddingLeft: "10px",
-        }}
-      >
+      <div className="header-flex">
         <Image src={synonym} alt="Synonym" width={264} height={60} className="ml-2 cursor-pointer" />
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <div className="header-container">
         <div style={{ width: "100%", marginTop: "20px" }}>
-          <div style={{ width: "100%", marginTop: "20px" }}>
-            <div className="line thick-line" style={{ marginTop: "10px" }}></div>
-            <div
-              style={{
-                textAlign: "left",
-                fontFamily: "Arial",
-                fontSize: "2rem",
-                marginTop: "1.5rem",
-              }}
-            >
+          <div style={{ width: "100%" }}>
+            <div className="line thick-line"></div>
+            <div className="header-text">
               <span style={{ fontWeight: 800 }}>Take Home Challenge</span>{" "}
               <span style={{ fontWeight: 100 }}>by Blaine Wissler</span>
             </div>

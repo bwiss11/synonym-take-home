@@ -45,6 +45,7 @@ const EquationRow = (props: EquationRowProps) => {
     const cursorPos = event.target.selectionStart || 0;
     setCursorPosition(cursorPos);
 
+    // Add new variable to environment
     const newVariable = {
       code: updatedEquation.lhs,
       type: "variable" as const,
@@ -58,6 +59,7 @@ const EquationRow = (props: EquationRowProps) => {
       variables: updatedVariables,
     });
 
+    // Get last identifier in input + replace partially completed identifier with autcomplete result
     const curIdentifier = value.split(/[\s()+\-*/^=]+/).pop() || "";
     const filteredResults = identifiers.filter((variable) =>
       variable.toLowerCase().includes(curIdentifier.toLowerCase())
@@ -71,8 +73,6 @@ const EquationRow = (props: EquationRowProps) => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, side: Side) => {
-    console.log("Key pressed:", e.key);
-    console.log("highlightedIndex", highlightedIndex);
     const results = side === "left" ? lhsResults : rhsResults;
     const input = side === "left" ? equation.lhs : equation.rhs;
     const setResults = side === "left" ? setLhsResults : setRhsResults;
@@ -83,7 +83,6 @@ const EquationRow = (props: EquationRowProps) => {
       // Get last identifier in input + replace partially completed identifier with autcomplete result
       const lastSegment = input.split(/[\s()+\-*/^=]+/).pop();
       const newValue = input.replace(new RegExp(`${lastSegment}$`), results[0]);
-      console.log("newValue", newValue);
 
       setResults([]);
 
@@ -114,7 +113,7 @@ const EquationRow = (props: EquationRowProps) => {
     }
   };
 
-  // Add click outside handler
+  // Add click outside handler to clear results
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (!lhsRef.current?.contains(event.target as Node)) {
@@ -133,16 +132,7 @@ const EquationRow = (props: EquationRowProps) => {
   }, []);
 
   return (
-    <div
-      style={{
-        width: "100%",
-        display: "flex",
-        flexDirection: "row",
-        gap: "20px",
-        paddingLeft: "10px",
-        paddingRight: "10px",
-      }}
-    >
+    <div className="equation-row">
       <div className="relative" ref={lhsRef} style={{ flex: 1 }}>
         <Input
           ref={lhsInputRef}
@@ -152,18 +142,10 @@ const EquationRow = (props: EquationRowProps) => {
           onKeyDown={(e) => handleKeyDown(e, "left")}
         />
         <div
+          className="dropdown"
           style={{
-            position: "absolute",
-            top: "100%",
             left: `${Math.min(9 * cursorPosition + 4, lhsInputRef.current?.offsetWidth || 500)}px`,
-            backgroundColor: "rgb(250, 250, 240)",
             border: lhsResults.length > 0 ? "1px solid #ccc" : "none",
-            zIndex: 1000, // Very high z-index
-            width: "100%",
-            maxHeight: "200px",
-            overflowY: "auto",
-            borderRadius: "0.25rem",
-            marginTop: "4px",
           }}
         >
           {lhsResults.map((result, index) => (
@@ -190,18 +172,13 @@ const EquationRow = (props: EquationRowProps) => {
           onKeyDown={(e) => handleKeyDown(e, "right")}
         />
         <div
+          className="dropdown"
           style={{
-            position: "absolute",
-            top: "100%",
-            left: `${Math.min(9 * cursorPosition + 4, rhsInputRef?.current?.offsetWidth ?? 1000) / 2}px`,
-            backgroundColor: "rgb(250, 250, 240)",
+            left: `${Math.min(
+              9 * cursorPosition + 4,
+              lhsInputRef.current?.offsetWidth ? lhsInputRef.current.offsetWidth / 2 : 500
+            )}px`,
             border: rhsResults.length > 0 ? "1px solid #ccc" : "none",
-            zIndex: 100,
-            width: "100%",
-            maxHeight: "200px",
-            overflowY: "auto",
-            borderRadius: "0.25rem",
-            marginTop: "4px",
           }}
         >
           {rhsResults.map((result, index) => (
